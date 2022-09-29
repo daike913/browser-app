@@ -11,6 +11,14 @@ export class TaskRenderer {
     return { deleteButtonEL }
   }
 
+  remove(task: Task) {
+    const taskEl = document.getElementById(task.id)
+
+    if (!taskEl) return
+
+    this.todoList.removeChild(taskEl)
+  }
+
   private render(task: Task) {
     // <div class="taskItem">
     //   <span>タイトル</span>
