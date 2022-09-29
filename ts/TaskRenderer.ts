@@ -4,9 +4,11 @@ export class TaskRenderer {
   constructor(private readonly todoList: HTMLElement) {}
 
   append(task: Task) {
-    const taskEL = this.render(task)
+    const { taskEl, deleteButtonEL } = this.render(task)
 
-    this.todoList.append(taskEL)
+    this.todoList.append(taskEl)
+
+    return { deleteButtonEL }
   }
 
   private render(task: Task) {
@@ -27,6 +29,6 @@ export class TaskRenderer {
 
     taskEl.append(spanEl, deleteButtonEL)
 
-    return taskEl
+    return { taskEl, deleteButtonEL }
   }
 }
