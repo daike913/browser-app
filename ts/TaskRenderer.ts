@@ -1,6 +1,7 @@
 import dragula from "dragula";
 
 import { Status, statusMap, Task } from "./Task";
+import { TaskCollection } from "./TaskCollection";
 
 export class TaskRenderer {
   constructor(
@@ -10,11 +11,11 @@ export class TaskRenderer {
   ) {}
 
   append(task: Task) {
-    const { taskEl, deleteButtonEL } = this.render(task)
+    const { taskEl, deleteButtonEl } = this.render(task)
 
     this.todoList.append(taskEl)
 
-    return { deleteButtonEL }
+    return { deleteButtonEl }
   }
 
   remove(task: Task) {
@@ -49,6 +50,14 @@ export class TaskRenderer {
     return el.id
   }
 
+  renderAll(taskCollection: TaskCollection) {
+    const todoTasks = this.renderList(taskCollection.filter(statusMap.todo), this.todoList)
+    const doingTasks = this.renderList(taskCollection.filter(statusMap.doing), this.doingList)
+    const doneTasks = this.renderList(taskCollection.filter(statusMap.done), this.doneList)
+
+    return [...todoTasks, ...doingTasks, ...doneTasks]
+  }
+
   private render(task: Task) {
     // <div class="taskItem">
     //   <span>タイトル</span>
@@ -57,16 +66,34 @@ export class TaskRenderer {
 
     const taskEl = document.createElement('div')
     const spanEl = document.createElement('span')
-    const deleteButtonEL = document.createElement('button')
+    const deleteButtonEl = document.createElement('button')
 
     taskEl.id = task.id
     taskEl.classList.add('task-item')
 
     spanEl.textContent = task.title
-    deleteButtonEL.textContent = '削除'
+    deleteButtonEl.textContent = '削除'
 
-    taskEl.append(spanEl, deleteButtonEL)
+    taskEl.append(spanEl, deleteButtonEl)
 
-    return { taskEl, deleteButtonEL }
+    return { taskEl, deleteButtonEl }
+  }
+
+  private renderList(tasks: Task[], listEl: HTMLElement) {
+    if (tasks.length === 0) return []
+
+    const taskList: Array<{
+      task: Task
+      deleteButtonEl: HTMLButtonElement
+    }> = []
+
+    tasks.forEach((task) => {
+      const { taskEl, deleteButtonEl } = this.render(task)
+
+      listEl.append(taskEl)
+      taskList.push({ task, deleteButtonEl })
+    })
+
+    return taskList
   }
 }
